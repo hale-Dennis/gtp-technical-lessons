@@ -1,21 +1,21 @@
 package com.demo.Spring.MVC.and.Rest;
 
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
 import org.springframework.http.HttpStatus;
+import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private Map<Long, UserDto> users = new ConcurrentHashMap<>();
     private AtomicLong idGenerator = new AtomicLong();
+    private Map<Long, UserDto> users = new HashMap<>();
 
     @GetMapping
     public List<UserDto> getAllUsers() {
