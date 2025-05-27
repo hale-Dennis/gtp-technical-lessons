@@ -1,11 +1,10 @@
-package com.demo.Spring.MVC.and.Rest;
+package com.demo.Spring.MVC.and.Rest.controller;
 
-import java.util.Map;
 import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
+
+import com.demo.Spring.MVC.and.Rest.model.UserDto;
+import com.demo.Spring.MVC.and.Rest.service.UserService;
 import org.springframework.http.HttpStatus;
-import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,17 +13,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserController {
 
-    private AtomicLong idGenerator = new AtomicLong();
-    private Map<Long, UserDto> users = new HashMap<>();
+    private final UserService userService;
+
+    UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<UserDto> getAllUsers() {
-        return new ArrayList<>(users.values());
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
-        UserDto user = users.get(id);
+        UserDto user = userService.getUser(id);
         return user != null ?
                 ResponseEntity.ok(user) :
                 ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -32,28 +34,26 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        long id = idGenerator.incrementAndGet();
-        userDto.id = id;
-        users.put(id, userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
+        UserDto user = userService.createUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        if (!users.containsKey(id)) {
-            return ResponseEntity.notFound().build();
+
+        UserDto user = userService.updateUser(id, userDto);
+        if (user != null) {
+            return ResponseEntity.ok(user);
         }
-        userDto.id = id;
-        users.put(id, userDto);
-        return ResponseEntity.ok(userDto);
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        if (!users.containsKey(id)) {
-            return ResponseEntity.notFound().build();
+
+        if (userService.deleteUser(id)){
+            return ResponseEntity.noContent().build();
         }
-        users.remove(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 }

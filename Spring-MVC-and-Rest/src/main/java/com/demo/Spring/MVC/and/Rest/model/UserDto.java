@@ -1,4 +1,4 @@
-package com.demo.Spring.MVC.and.Rest;
+package com.demo.Spring.MVC.and.Rest.model;
 
 public class UserDto {
     public Long id;
