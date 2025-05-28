@@ -26,6 +26,7 @@ public class UserRequest {
         UserRequest request = new UserRequest();
         request.setName(user.getName());
         request.setEmail(user.getEmail());
+
         return request;
     }
 }

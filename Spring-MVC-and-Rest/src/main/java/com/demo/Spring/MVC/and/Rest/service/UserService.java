@@ -1,13 +1,12 @@
 package com.demo.Spring.MVC.and.Rest.service;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.List;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
+import java.util.HashMap;
 import org.slf4j.LoggerFactory;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import com.demo.Spring.MVC.and.Rest.model.User;
 import com.demo.Spring.MVC.and.Rest.dto.UserRequest;
@@ -25,6 +24,7 @@ public class UserService {
     }
 
     public List<UserRequest> getAllUsers() {
+
         return users.values().stream()
                 .map(UserRequest::fromUser)
                 .collect(Collectors.toList());
@@ -34,6 +34,7 @@ public class UserService {
         if (!users.containsKey(id)) {
             return null;
         }
+
         return UserRequest.fromUser(users.get(id));
     }
 
@@ -46,6 +47,7 @@ public class UserService {
         user.setId(id);
         users.put(user.getId(), user);
         logger.info("Username: {} id: {} Time Created: {}", user.getName(), id, LocalDateTime.now());
+
         return userRequest;
     }
 
@@ -57,6 +59,8 @@ public class UserService {
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
         users.put(user.getId(), user);
+        logger.info("Username: {} id: {} Time Updated: {}", user.getName(), id, LocalDateTime.now());
+
         return userRequest;
     }
 
@@ -65,6 +69,8 @@ public class UserService {
             return false;
         }
         users.remove(id);
+        logger.info("Username: {} id: {} Time Deleted", id, LocalDateTime.now());
+
         return true;
     }
 
