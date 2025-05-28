@@ -1,17 +1,22 @@
 package com.demo.Spring.MVC.and.Rest.service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-import com.demo.Spring.MVC.and.Rest.model.UserDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import com.demo.Spring.MVC.and.Rest.model.User;
+import com.demo.Spring.MVC.and.Rest.dto.UserRequest;
 
 
 @Service
 public class UserService {
-    private final Map<Long, UserDto> users;
+    Logger logger = LoggerFactory.getLogger(UserService.class);
+    private final Map<Long, User> users;
     private final IDService idService;
 
     UserService(IDService idService) {
@@ -19,29 +24,40 @@ public class UserService {
         this.users = new HashMap<>();
     }
 
-    public List<UserDto> getAllUsers() {
-
-        return new ArrayList<>(users.values());
+    public List<UserRequest> getAllUsers() {
+        return users.values().stream()
+                .map(UserRequest::fromUser)
+                .collect(Collectors.toList());
     }
 
-    public UserDto getUser(Long id) {
-        return users.get(id);
-    }
-
-    public UserDto createUser(UserDto userDto) {
-        long id = idService.getIdGenerator();
-        userDto.id = id;
-        users.put(id, userDto);
-        return userDto;
-    }
-
-    public UserDto updateUser(Long id, UserDto userDto) {
+    public UserRequest getUser(Long id) {
         if (!users.containsKey(id)) {
             return null;
         }
-        userDto.id = id;
-        users.put(id, userDto);
-        return userDto;
+        return UserRequest.fromUser(users.get(id));
+    }
+
+    public UserRequest createUser(UserRequest userRequest) {
+        long id = idService.getIdGenerator();
+        User user = new User();
+        user.setId(id);
+        user.setName(userRequest.getName());
+        user.setEmail(userRequest.getEmail());
+        user.setId(id);
+        users.put(user.getId(), user);
+        logger.info("Username: {} id: {} Time Created: {}", user.getName(), id, LocalDateTime.now());
+        return userRequest;
+    }
+
+    public UserRequest updateUser(Long id, UserRequest userRequest) {
+        if (!users.containsKey(id)) {
+            return null;
+        }
+        User user = users.get(id);
+        user.setName(userRequest.getName());
+        user.setEmail(userRequest.getEmail());
+        users.put(user.getId(), user);
+        return userRequest;
     }
 
     public Boolean deleteUser(Long id) {
